@@ -1,0 +1,153 @@
+---
+title: "FORMATIVE ASSESSMENT 3"
+author: "Lindsy Rossel C. Masicat"
+date: "2024-02-25"
+output: html_document
+---
+
+## Answer Exercises 7.1 items 2 and 7.
+### Question Number 2
+  A binary communication channel carries data as one of two sets of signals denoted by 0 and 1. Owing to noise, a transmitted 0 is sometimes received as a 1, and a transmitted 1 is sometimes received as a 0. For a given channel, it can be assumed that a transmitted 0 is correctly received with probability 0.95, and a transmitted 1 is correctly received with probability 0.75. Also, 70% of all messages are transmitted as a 0. If a signal is sent, determine the probability that:
+  
+  (a) a 1 was received;
+
+  Based on the book, the solution will be
+
+  Let R0 be the event that a zero is received. Let T0 be the event that a zero is transmitted.
+
+  Let R1 be the event that a one is received. Let T1 be the event that a one is transmitted.
+  
+  the probability that a one was received, we note
+
+  R1 = (T1 ∩ R1)∪(T0 ∩ R1)
+
+  so the probability that one is received,
+
+  P(R1) = P(T1)P(R1|T1) + P(T0)P(R1|T0)
+
+  therefore,
+
+  P(R1)=(0.3 × 0.75)+(0.7 × 0.05) = 0.225 + 0.035 = 0.26
+  
+  in R,
+
+```{r R1}
+
+  Received0_given_T0 <- 0.95
+  Received1_given_T1 <- 0.75
+  Received1_given_T0 <- 0.05
+  Received0_given_T1 <- 0.25
+
+  T0 <- 0.7
+  T1 <- 0.3
+
+  R1 <- ((T1*Received1_given_T1) + (T0*Received1_given_T0))
+
+  cat("The probability that 1 is received is: ", R1, "\n")
+
+```
+
+  Thus, 26% is the probability that 1 is received.
+  
+  
+(b) a 1 was transmitted given than a 1 was received. 
+
+The solution will be,
+
+  Let R0 be the event that a zero is received. Let T0 be the event that a zero is transmitted.
+  Let R1 be the event that a one is received. Let T1 be the event that a one is transmitted.
+
+  We use Bayes’ rule,
+
+  P(T1|R1) = ((P(T1)P(R1|T1))/P(R1))
+
+  Then, 
+
+  P(T1)P(R1|T1) = 0.3 × 0.75 = 0.225
+
+  Given that P(R1) = 0.26, based on the solution in letter A, we will now have
+
+  P(T1|R1) = ((0.3 × 0.75)/0.26) = (0.225/0.26) = 0.865
+
+  in R, 
+  
+```{r T1|RQ}
+    Received0_given_T0 <- 0.95
+    Received1_given_T1 <- 0.75
+    Received1_given_T0 <- 0.05
+    Received0_given_T1 <- 0.25
+
+    T0 <- 0.7
+    T1 <- 0.3
+
+    R1 <- ((T1*Received1_given_T1) + (T0*Received1_given_T0))
+
+    R1_given_T1 <- ((T1*Received1_given_T1)/R1)
+
+    cat("The probability that 1 was transmitted given than a 1 was received: ",        R1_given_T1, "\n")
+```
+  
+  Thus, 86.5% is the probability that 1 is transmitted given that 1 is received.
+
+
+### Question Number 7
+There are three employees working at an IT company: Jane, Amy, and Ava, doing 10%, 30%, and 60% of the programming, respectively. 8% of Jane’s work, 5% of Amy’s work, and just 1% of Ava‘s work is in error. What is the overall percentage of error? If a program is found with an error, who is the most likely person to have written it? 
+
+To solve for the overall percentage error, we use total probability
+
+  Assuming E to be the error of the work of the three employees,
+  
+  E = (Jane ∩ janeErrorWork)∪(Amy ∩ amyErrorWork)∪(Ava ∩ avaErrorWork)
+  
+  so,
+  
+  P(E) = P(Jane)P(E|Jane) + P(Amy)P(E|Amy) + P(Ava)P(E|Ava)
+       = ((0.1*0.08) + (0.3*0.05) + (0.6*0.01))
+       = 0.008 + 0.015 + 0.006
+       = 0.029
+       
+  in R,
+  
+```{r overall error}
+  janeProgram <- 0.1
+  amyProgram <- 0.3
+  avaProgram <- 0.6
+
+  janeErrorWork <- 0.08
+  amyErrorWork <- 0.05
+  avaErrorWork <- 0.01
+  
+  totalError <- ((janeProgram*janeErrorWork) + (amyProgram*amyErrorWork) + (avaProgram*avaErrorWork))
+
+  cat("The total probability of error: ", totalError, "\n")
+```
+  
+  Thus, 2.9% is the total probability of overall error percentage.
+  
+  
+  Now, to find the person who most likely have written the error, solve for posterior possibilities,
+  
+  P(J|E) = ((P(Jane)P(E|Jane))/P(E)) = ((0.1*0.08)/0.029) = 0.28
+  P(A|E) = ((P(Amy)P(E|Amy))/P(E)) = ((0.3*0.05)/0.029) = 0.52
+  P(AV|E) = ((P(Ava)P(E|Ava))/P(E)) = ((0.6*0.01)/0.029) = 0.21
+
+  in R,
+
+```{r most likely}
+
+  janeError <- ((janeProgram*janeErrorWork)/totalError)
+  cat("Jane's written error: ", janeError, "\n")
+
+  amyError <- ((amyProgram*amyErrorWork)/totalError)
+  cat("Amy's written error: ", amyError, "\n")
+  
+  avaError <- ((avaProgram*avaErrorWork)/totalError)
+  cat("Ava's written error: ",  avaError, "\n")
+ 
+  errorRate <- c(janeError, amyError, avaError)
+  mostLikely <- which.max(errorRate)
+  cat("The most likely person to have written the error is:", c("Jane", "Amy", "Ava")[mostLikely], "\n")
+  
+```
+
+  Because P(A|E) is the largest, the person who most likely have written an error is Amy.
